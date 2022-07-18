@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:virtual_store/screens/home_screen.dart';
+import 'package:virtual_store/screens/products_list_screen.dart';
 import '../drawer/custom_drawer.dart';
 
 class TabService extends StatefulWidget {
-
   const TabService({Key? key}) : super(key: key);
 
   @override
@@ -11,7 +11,6 @@ class TabService extends StatefulWidget {
 }
 
 class _TabServiceState extends State<TabService> {
-
   final _pageController = PageController();
 
   @override
@@ -24,6 +23,14 @@ class _TabServiceState extends State<TabService> {
           body: const HomeScreen(),
           drawer: CustomDrawer(pageController: _pageController),
         ),
+        Scaffold(
+          appBar: AppBar(
+            title: const Text('Produtos'),
+            centerTitle: true,
+          ),
+          body: ProductsListScreen(),
+          drawer: CustomDrawer(pageController: _pageController),
+        )
       ],
     );
   }
