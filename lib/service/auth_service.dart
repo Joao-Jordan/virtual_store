@@ -3,25 +3,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:virtual_store/drawer/custom_drawer.dart';
 import 'package:virtual_store/screens/login_screen.dart';
 import 'package:virtual_store/service/tab_service.dart';
-
-import '../screens/home_screen.dart';
-import '../screens/reset_pass_screen.dart';
-import '../screens/signup_screen.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
-
+  bool isLoggedIn = false;
   handleAuthState() {
     return StreamBuilder(
       stream: _auth.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return HomeScreen();
+          return TabService();
         }
-        return LoginScreen();
+        return const LoginScreen();
       },
     );
   }

@@ -124,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       email: email,
                       password: password,
                     );
+                    Navigator.of(context).pop();
                   }
                 },
               ),
