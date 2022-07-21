@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:virtual_store/service/auth_service.dart';
+import 'package:scoped_model/scoped_model.dart';
+
+import '../models/user_model.dart';
 
 class ResetPassword extends StatefulWidget {
-  ResetPassword({Key? key}) : super(key: key);
+  const ResetPassword({Key? key}) : super(key: key);
 
   @override
   State<ResetPassword> createState() => _ResetPasswordState();
@@ -19,21 +21,20 @@ class _ResetPasswordState extends State<ResetPassword> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Recuperar senha'),
+          title: const Text('Recuperar senha'),
         ),
         body: Align(
           alignment: Alignment.topCenter,
-          child: Container(
+          child: SizedBox(
             width: 340,
             height: 190,
             child: Card(
               elevation: 20,
               color: Colors.grey[200],
               child: Padding(
-                padding: EdgeInsets.all(20),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  //crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Form(
                       key: _formKey,
@@ -49,38 +50,61 @@ class _ResetPasswordState extends State<ResetPassword> {
                               !text.contains('.com')) {
                             return 'E-mail inválido';
                           }
+                          return null;
                         },
                       ),
                     ),
                     const SizedBox(height: 30),
-                    Container(
-                      height: 40,
-                      width: 150,
-                      decoration: BoxDecoration(
-                        color: primaryColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: TextButton(
-                        child: const Text(
-                          'Enviar código',
-                          style: TextStyle(color: Colors.white),
+                    ScopedModelDescendant<UserModel>(builder: (context, child, model){
+                      return Container(
+                        height: 40,
+                        width: 150,
+                        decoration: BoxDecoration(
+                          color: primaryColor,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        onPressed: () {
-                          if(_formKey.currentState!.validate()){
-                            String email = _emailController.text;
-                            AuthService().sendResetPassEmail(email: email);
-
-                            Navigator.of(context).pop();
-                          }
-
-                        },
-                      ),
-                    ),
+                        child: TextButton(
+                          child: const Text(
+                            'Enviar código',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () {
+                            if(_formKey.currentState!.validate()){
+                              String email = _emailController.text;
+                              model.sendResetPassEmail(email: email, onSuccess: _onSuccess, onFail: _onFail);
+                            }
+                          },
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
             ),
           ),
         ));
+  }
+
+  _onSuccess() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Email de recuperação enviado!'),
+        backgroundColor: Theme.of(context).primaryColor,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    Future.delayed(const Duration(seconds: 2)).then((_){
+      Navigator.of(context).pop();
+    });
+  }
+
+  _onFail() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Falha ao enviar email de recuperação!', style: TextStyle(fontWeight: FontWeight.bold),),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 }
